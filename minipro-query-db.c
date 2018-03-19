@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,9 +9,40 @@
 #include "database.h"
 #include "error.h"
 
-void print_help_and_exit(const char *progname) {
-	fprintf(stderr, "Usage: %s [-s search] [<device>]\n", progname);
-	exit(-1);
+void print_help_and_exit(const char *progname, int rv) {
+	fprintf(rv ? stderr : stdout,
+			"Usage: %s [-s][-j][-h] <name>\n"
+			"    -s    List parts where name begins with <name>\n"
+			"    -j    Output database record in JSON format\n"
+			"    -h    Print help and quit (this text)\n",
+			progname);
+	exit(rv);
+}
+
+void print_device_info_json(device_t *device) {
+	char buf[100];
+	printf("{\"name\": \"%s\",\n", device->name);
+	printf(" \"protocol_id\": %u,\n", device->protocol_id);
+	printf(" \"variant\": %u,\n", device->variant);
+	printf(" \"addressing_mode\": %u,\n", device->addressing_mode);
+	printf(" \"read_buffer_size\": %u,\n", device->read_buffer_size);
+	printf(" \"write_buffer_size\": %u,\n", device->write_buffer_size);
+	printf(" \"word_size\": %u,\n", device->word_size);
+	printf(" \"code_memory_size\": %u,\n", device->code_memory_size);
+	printf(" \"data_memory_size\": %u,\n", device->data_memory_size);
+	printf(" \"data_memory2_size\": %u,\n", device->data_memory2_size);
+	printf(" \"chip_id\": \"");
+	snprintf(buf, sizeof(buf), "%08x", device->chip_id);
+	assert(device->chip_id_bytes_count <= 4);
+	printf("%s\",\n", buf + 8 - device->chip_id_bytes_count * 2);
+	printf(" \"chip_id_bytes_count\": %u,\n", device->chip_id_bytes_count);
+	printf(" \"opts1\": %u,\n", device->opts1);
+	printf(" \"opts2\": %u,\n", device->opts2);
+	printf(" \"opts3\": %u,\n", device->opts3);
+	printf(" \"opts4\": %u,\n", device->opts4);
+	printf(" \"package_details\": %u,\n", device->package_details);
+	printf(" \"write_unlock\": %u,\n", device->write_unlock);
+	printf(" \"fuses\": %u}\n", device->fuses ? 1 : 0); /* TODO */
 }
 
 void print_device_info(device_t *device) {
@@ -65,29 +97,52 @@ void print_device_info(device_t *device) {
 }
 
 int main(int argc, char **argv) {
-	if(argc < 2) {
-		print_help_and_exit(argv[0]);
+	int search = 0;
+	int json = 0;
+	int c;
+	const char* term = NULL;
+	while((c = getopt(argc, argv, "sjh")) != -1) {
+		if(c == 's') {
+			search = 1;
+		}
+		else if( c == 'j') {
+			json = 1;
+		}
+		else if( c== 'h') {
+			print_help_and_exit(argv[0], 0);
+		}
+		else {
+			print_help_and_exit(argv[0], -1);
+		}
 	}
 
-	if(!strcmp(argv[1], "-s")) {
-		if(argc < 3) {
-			print_help_and_exit(argv[0]);
-		}
-		// Listing all devices that starts with argv[2]
+	if(optind + 1 != argc) {
+		print_help_and_exit(argv[0], -1);
+	}
+	term = argv[optind];
+
+	// Listing all devices that starts with argv[2]
+	if( search ) {
+		size_t term_len = strlen(term);
 		device_t *device;
 		for(device = &(devices[0]); device[0].name; device = &(device[1])) {
-			if(!strncasecmp(device[0].name, argv[2], strlen(argv[2]))) {
+			if(!strncasecmp(device[0].name, term, term_len)) {
 				printf("%s\n", device[0].name);
 			}
 		}
 		return(0);
 	}
 
-	device_t *device = get_device_by_name(argv[1]);
+	device_t *device = get_device_by_name(term);
 	if(!device) {
 		ERROR("Unknown device");
 	}
 
-	print_device_info(device);
+	if( json ) {
+		print_device_info_json(device);
+	}
+	else {
+		print_device_info(device);
+	}
 	return(0);
 }
