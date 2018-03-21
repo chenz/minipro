@@ -12,7 +12,7 @@
 void print_help_and_exit(const char *progname, int rv) {
 	fprintf(rv ? stderr : stdout,
 			"Usage: %s [-s][-j][-h] <name>\n"
-			"    -s    List parts where name begins with <name>\n"
+			"    -s    List part names that begin with <name>\n"
 			"    -j    Output database record in JSON format\n"
 			"    -h    Print help and quit (this text)\n",
 			progname);
@@ -105,10 +105,10 @@ int main(int argc, char **argv) {
 		if(c == 's') {
 			search = 1;
 		}
-		else if( c == 'j') {
+		else if(c == 'j') {
 			json = 1;
 		}
-		else if( c== 'h') {
+		else if(c == 'h') {
 			print_help_and_exit(argv[0], 0);
 		}
 		else {
@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
 	term = argv[optind];
 
 	// Listing all devices that starts with argv[2]
-	if( search ) {
+	if(search) {
 		size_t term_len = strlen(term);
 		device_t *device;
 		for(device = &(devices[0]); device[0].name; device = &(device[1])) {
@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
 		ERROR("Unknown device");
 	}
 
-	if( json ) {
+	if(json) {
 		print_device_info_json(device);
 	}
 	else {
