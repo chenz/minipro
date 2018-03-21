@@ -27,7 +27,6 @@ void print_device_info_json(device_t *device) {
 	printf(" \"addressing_mode\": %u,\n", device->addressing_mode);
 	printf(" \"read_buffer_size\": %u,\n", device->read_buffer_size);
 	printf(" \"write_buffer_size\": %u,\n", device->write_buffer_size);
-	printf(" \"word_size\": %u,\n", device->word_size);
 	printf(" \"code_memory_size\": %u,\n", device->code_memory_size);
 	printf(" \"data_memory_size\": %u,\n", device->data_memory_size);
 	printf(" \"data_memory2_size\": %u,\n", device->data_memory2_size);
