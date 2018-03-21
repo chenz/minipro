@@ -24,7 +24,6 @@ void print_device_info_json(device_t *device) {
 	printf("{\"name\": \"%s\",\n", device->name);
 	printf(" \"protocol_id\": %u,\n", device->protocol_id);
 	printf(" \"variant\": %u,\n", device->variant);
-	printf(" \"addressing_mode\": %u,\n", device->addressing_mode);
 	printf(" \"read_buffer_size\": %u,\n", device->read_buffer_size);
 	printf(" \"write_buffer_size\": %u,\n", device->write_buffer_size);
 	printf(" \"code_memory_size\": %u,\n", device->code_memory_size);
