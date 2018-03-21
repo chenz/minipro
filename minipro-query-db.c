@@ -26,12 +26,12 @@ static void print_device_fields_json(const device_t* device, const char* indent)
 	PRINT("\"data_memory2_size\": %u,", device->data_memory2_size);
 	PRINT("\"chip_id\": \"%s\",", chip_id + 8 - device->chip_id_bytes_count * 2);
 	PRINT("\"chip_id_bytes_count\": %u,", device->chip_id_bytes_count);
-	PRINT("\"opts1\": 0x%x,", device->opts1);
-	PRINT("\"opts2\": 0x%x,", device->opts2);
-	PRINT("\"opts3\": 0x%x,", device->opts3);
-	PRINT("\"opts4\": 0x%x,", device->opts4);
-	PRINT("\"package_details\": 0x%x,", device->package_details);
-	PRINT("\"write_unlock\": 0x%x", device->write_unlock);
+	PRINT("\"opts1\": %u,", device->opts1);
+	PRINT("\"opts2\": %u,", device->opts2);
+	PRINT("\"opts3\": %u,", device->opts3);
+	PRINT("\"opts4\": %u,", device->opts4);
+	PRINT("\"package_details\": %u,", device->package_details);
+	PRINT("\"write_unlock\": %u", device->write_unlock);
 	#undef PRINT
 }
 
